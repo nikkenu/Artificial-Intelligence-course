@@ -66,7 +66,9 @@ def diagonal_winner_check(board, player):
     """
     top_left_as_list = [board[0][0], board[1][1], board[2][2]]
     top_right_as_list = [board[0][2], board[1][1], board[2][0]]
-    if all(x == player for x in top_left_as_list) or all(x == player for x in top_right_as_list):
+    if top_left_as_list.count(player) == len(top_left_as_list):
+        return True
+    if top_right_as_list.count(player) == len(top_right_as_list):
         return True
     return False
 
@@ -75,12 +77,27 @@ def winner(board):
     Returns the winner of the game, if there is one.
     """
     for player in X,O:
-        for row in board:
-            if len(set(row)) == player:
-                return player
+        if row_winner_check(board, player):
+            return player
+        if column_winner_check(board, player):
+            return player
         if diagonal_winner_check(board, player):
             return player
     return None
+
+def row_winner_check(board, player):
+    for row in board:
+        if row.count(player) == len(row):
+            return True
+    return False
+
+def column_winner_check(board, player):
+    board_transpose = list(map(list, zip(*board)))
+    for row in board_transpose:
+        if row.count(player) == len(row):
+            return True
+    return False
+        
 
 def terminal(board):
     """
@@ -89,7 +106,7 @@ def terminal(board):
     if all(all(square is not EMPTY for square in row) for row in board):
         return True
     
-    if winner(board):
+    if winner(board) is X or winner(board) is O:
         return True
     
     return False
